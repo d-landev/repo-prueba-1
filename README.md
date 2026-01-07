@@ -1,33 +1,51 @@
-# NestJS sample with free CI/CD (GitHub Actions)
+# Clean Architecture NestJS E-commerce API
 
-Resumen rápido:
-- Este proyecto es un scaffold mínimo de NestJS.
-- El workflow de GitHub Actions está pensado para repositorios públicos y usa GitHub-hosted runners (gratuito si el repo es público).
-- La imagen Docker se publica en GitHub Container Registry (`ghcr.io`). Para repositorios públicos GHCR no provoca cobros.
+Robust REST API built with NestJS, following Clean Architecture, DDD, and CQRS principles.
 
-Requisitos:
-- Tener un repositorio público en GitHub (si lo quieres sin costes).
+## Features
+- **Clean Architecture**: Separation of concerns (Domain, Application, Infrastructure).
+- **CQRS**: Command Query Responsibility Segregation using `@nestjs/cqrs`.
+- **Global Error Handling**: Centralized error codes and standardized JSON responses.
+- **Database**: PostgreSQL (TypeORM) with support for Neon.tech / Supabase.
+- **Deployment**: Dockerized and ready for Render.com.
 
-Cómo ejecutar localmente:
+## Getting Started
 
-1. Instala dependencias
+### Prerequisites
+- Docker & Docker Compose
+- Node.js (Optional, dev only)
+
+### Environment Setup
+1. Create a `.env` file based on the example:
+   ```bash
+   DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
+   PORT=3000
+   NODE_ENV=development
+   ```
+
+### Running Locally (Docker)
+Run the entire stack with one command:
+```bash
+docker-compose up --build
 ```
-npm install
-```
+API available at: `http://localhost:3000`
 
-2. Ejecuta en modo desarrollo
-```
-npm run start:dev
-```
+## Deployment (Render Blueprints)
+This project uses **Infrastructure as Code** via `render.yaml` to deploy two environments automatically.
 
-3. Compilar y ejecutar la versión construida
-```
-npm run build
-npm start
-```
+### How to Deploy
+1. **Push code**: Ensure both `main` and `develop` branches are pushed to GitHub.
+2. **Render Dashboard**:
+   - Click **New +** -> **Blueprint**.
+   - Connect this repository.
+   - Render will detect `render.yaml` and propose creating two services:
+     - `nestjs-api-prod` (Main)
+     - `nestjs-api-dev` (Develop)
+3. **Configuration**:
+   - **Dev**: Requires no extra config (DB URL is set in YAML).
+   - **Prod**: You will be prompted to enter the `DATABASE_URL` for your production database (keep this secret!).
+4. **Click Apply**: Render will deploy both services. 
 
-GitHub Actions / CI notes:
-- El workflow `ci-cd.yml` en `.github/workflows` compila el proyecto y publica la imagen a `ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest`.
-- No se requieren secrets adicionales si el repositorio es público; el job usa `secrets.GITHUB_TOKEN` y el permiso `packages: write`.
+Each push to `develop` updates the *Dev* service.
+Each push to `main` updates the *Prod* service.
 
-Si quieres que genere el repo remoto en tu GitHub (crear el repo y hacer el primer push), dímelo y puedo proporcionarte los comandos que debes ejecutar localmente.
