@@ -1,0 +1,32 @@
+services:
+  # Production Service (Main Branch)
+  - type: web
+    name: nestjs-api-prod
+    env: docker
+    region: ohio
+    plan: free
+    branch: main
+    healthCheckPath: /products
+    envVars:
+      - key: DATABASE_URL
+        sync: false # Set securely in Render Dashboard
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+
+  # Development Service (Develop Branch)
+  - type: web
+    name: nestjs-api-dev
+    env: docker
+    region: ohio
+    plan: free
+    branch: develop
+    healthCheckPath: /products
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_Xeq4KLS8IkZj@ep-blue-tooth-a41a53bv-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: development
