@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      # Override NODE_ENV for dev if needed, though Dockerfile is prod-optimized
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for hot reload (requires using dev command in container, overriding default CMD)
+      - ./src:/app/src
+    command: npm run start 
+    # Overriding default CMD to use dev server for hot reload. 
+    # Note: original Dockerfile uses 'node dist/main.js' which is prod.
+    # For this to work efficiently, we might need a dev target in Dockerfile, 
+    # but 'npm run start:dev' should work if dependencies are installed.
+    # Since we are mounting src, we need to ensure node_modules inside container are preserved.
